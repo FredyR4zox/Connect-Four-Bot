@@ -2,9 +2,8 @@
 #include <stdlib.h>
 #include "Board.h"
 #include "Algorithm.h"
-
 using namespace std;
-
+/*Vais metendo os tokens com o numero da coluna e enter e para sair fazes 7+Enter*/
 int main(void) {
 	Board *x = new Board();
 	int inp = 0;
