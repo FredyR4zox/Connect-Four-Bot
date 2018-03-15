@@ -3,50 +3,49 @@
 using namespace std;
 
 class Board {
-
 private:
-	array< array <char,7> ,6> tab;
+	array< array<char, 7>, 6> tab;
 	char lastMove;
 	int value; 
+
 public:
 	Board();
-	~Board();
-	array < array<char,7>,6> getBoard();	
-	void printBoard();
+
+	array< array<char, 7>, 6> getBoard();	
+
+	void display();
+	int checkGameOver();
 	char searchToken(int i, int j);
-	void chooseDropPlace(int l, int player);
+	bool chooseDropPlace(int column, char piece);
 	void calcAssignPoints(string h[6][4], string v[7][4], string d1[7][4], string d2[7][4]);
 };
-
-//Escolhe a coluna onde se põe o token
-void Board::chooseDropPlace(int l, int player) {
-	for (int i = 5 ; i >= 0; i--) {
-		if (tab[i][l] == 'x' || tab[i][l] == 'o')
-			continue;
-		else {
-				 if (player == 0) {
-				tab[i][l] = 'x'; 
-				return;
-			}
-			else {			
-				tab[i][l] = 'o'; 
-				return;
-			}
-		} //falta fazer "exception" para nao deixar por numa coluna cheia
-	}
-}
 
 //Construtor default (void) do board
 Board::Board() {
 	for (int i = 0 ; i < 6 ; i++)
 		for (int j = 0 ; j < 7 ; j++)
 			tab[i][j] = '-';
-		value = 0;
+	
+	value = 0;
 }
 
 //Getter do board
-array < array<char,7>,6> Board::getBoard() {
+array< array<char, 7>, 6> Board::getBoard() {
 	return tab;
+}
+
+//Imprime o tabuleiro (já formatado/pronto!)
+void Board::display() {
+	cout << "+---------------+" << endl;
+	for (int i = 0 ; i < 6 ; i++) {
+		cout << "  ";
+		for (int j = 0 ; j < 7 ; j++)
+			cout << tab[i][j] << " ";
+		
+		cout << endl;
+	}
+	cout << "+ 0 1 2 3 4 5 6 +" << endl;
+	cout << "+---------------+" << endl;
 }
 
 //Retorna o token na posição (i,j)
@@ -54,17 +53,64 @@ char Board::searchToken(int i, int j) {
 	return tab[i][j];
 }
 
-//Imprime o tabuleiro (já formatado/pronto!)
-void Board::printBoard() {
-	cout << "+----------------+" << endl;
-	cout << "+ 0 1 2 3 4 5 6  +" << endl;
-	for (int i = 0 ; i < 6 ; i++) {
-		cout << "| ";
-		for (int j = 0 ; j < 7 ; j++)
-			cout << tab[i][j] << " ";
-		cout << " |" << endl; //o endl está fora do for de j's
+//Escolhe a coluna onde se põe o token
+bool Board::chooseDropPlace(int column, char piece) {
+	for (int i = 5 ; i >= 0; i--){
+		if (tab[i][column] != '-')
+			continue;
+		
+		tab[i][column] = piece;
+		return true;
 	}
-	cout << "+----------------+" << endl;
+	return false;
+}
+
+int Board::checkGameOver(){
+	int k;
+	for(int i=0; i<6; i++){
+		for(int j=0; j<7; j++){
+			if(tab[i][j] != '-'){
+				//verificar direita
+				for(k=1; k<4 && j+k<7; k++){
+					if(tab[i][j+k] != tab[i][j])
+						break;
+				}
+				if(k>=4)
+					return 1;
+
+				//verificar esquerda
+				for(k=1; k<4 && j-k>=0; k++){
+					if(tab[i][j-k] != tab[i][j])
+						break;
+				}
+				if(k>=4)
+					return 1;
+
+				//verificar baixo
+				for(k=1; k<4 && i+k<6; k++){
+					if(tab[i+k][j] != tab[i][j])
+						break;
+				}
+				if(k>=4)
+					return 1;
+
+				//verificar cima
+				for(k=1; k<4 && i-k>=0; k++){
+					if(tab[i-k][j] != tab[i][j])
+						break;
+				}
+				if(k>=4)
+					return 1;
+			}
+		}
+	}
+
+	for(int i=0; i<6; i++)
+		for(int j=0; j<7; j++)
+			if(tab[i][j] == '-')
+				return 0;
+
+	return 2;
 }
 
 //Também se pode por esta funçao como parte da board
@@ -85,7 +131,7 @@ void Board::calcAssignPoints(string h[6][4], string v[7][4], string d1[7][4], st
 	(+16 for X, -16 for O)
 	*/
 
-int total = 0;
+	int total = 0;
 
 	//Calcular pontos horizontais
 	for (int i = 0 ; i < 7 ; i++) {
@@ -125,10 +171,11 @@ int total = 0;
 				total += 50;
 				continue;
 			}
-		}		
+		}
+	}		
 
-		//Calcular pontos verticais
-		for (int i = 0 ; i < 7 ; i++) {
+	//Calcular pontos verticais
+	for (int i = 0 ; i < 7 ; i++) {
 		for (int j = 0 ; j < 4 ; j++) {
 			if (v[i][j] == "xxxx") {
 				total += 512;
@@ -165,7 +212,8 @@ int total = 0;
 				total += 50;
 				continue;
 			}
-		}	
+		}
+	}
 
 	//Calcular pontos diagonal1 (/)
 	for (int i = 0 ; i < 7 ; i++) {
@@ -206,8 +254,9 @@ int total = 0;
 				continue;
 			}
 		}	
+	}
 
-		//Calcular pontos diagonal2 (\)
+	//Calcular pontos diagonal2 (\)
 	for (int i = 0 ; i < 7 ; i++) {
 		for (int j = 0 ; j < 4 ; j++) {
 			if (d2[i][j] == "xxxx") {
@@ -252,4 +301,5 @@ int total = 0;
 		else total += 16;
 
 		value = total;
+	}
 }
