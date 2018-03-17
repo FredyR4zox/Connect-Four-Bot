@@ -2,55 +2,60 @@
 #include <stdlib.h>
 #include "Board.h"
 #include "Algorithm.h"
+#include "Minimax.h"
 using namespace std;
 /*Vais metendo os tokens com o numero da coluna e enter e para sair fazes 7+Enter*/
 
 int main() {
-    Board board = Board();
-    int move, moves = 0, firstPlayer, gameOver = 0;
-    char piece;
+    int column, moves = 0, gameOver = 0;
+    char firstPlayer;
 
     //O primeiro jogador joga com o 'x'
     cout << "Primeiro jogador a jogar:" << endl;
-    cout << "\t1 - EU" << endl;
-    cout << "\t2 - Computador" << endl << endl;
+    cout << "\tH - Humano" << endl;
+    cout << "\tC - Computador" << endl << endl;
     cout << "Opção: ";
 
     cin >> firstPlayer;
 
-    if(firstPlayer!= 1 && firstPlayer!=2){
+    if(firstPlayer!='H' && firstPlayer!='C'){
         cout << "Erro! Opção não disponível" << endl;
         return 1;
     }
 
-    board.display();
+    //initialNode para depois podermos fazer delete à arvore toda
+    Node* initialNode = new Node(firstPlayer);
+    Node* actualNode = initialNode;
+
+    actualNode->getBoard().display();
+    minimaxDecision(*actualNode, 8);
     
     while (!gameOver){
-        //if((moves%2 == 0 && firstPlayer == 1) || (moves%2 != 0 && firstPlayer != 1)){
-            cout << "Introduza a linha a inserir: ";
-            cin >> move;
-        //}
-
-        if(move<0 || move>6){
-            cout << endl << "Erro! Coluna não existente" << endl;
-            continue;
+        if((moves%2==0 && firstPlayer=='C') || (moves%2!=0 && firstPlayer!='C')){
+            column = minimaxDecision(*actualNode, 8);
+            cout << "PC jogou na coluna: " << column << endl;
+            actualNode = actualNode->chooseDropPlace(column);
         }
+        else{
+            cout << "Introduza a linha a inserir: ";
+            cin >> column;
 
-        //se o jogador a jogar for o primeiro
-        if(moves%2 == 0)
-            piece = 'x';
-        else
-            piece = 'o';
+            if(column<0 || column>6){
+                cout << endl << "Erro! Coluna não existente" << endl;
+                continue;
+            }
 
-        if(!board.chooseDropPlace(move, piece)){
-            cout << endl << "Erro! Não é possivel fazer uma jogada nessa coluna" << endl;
-            continue;
+            if(!actualNode->chooseDropPlace(column)){
+                cout << endl << "Erro! Não é possivel fazer uma jogada nessa coluna" << endl;
+                continue;
+            }
+            actualNode = actualNode->chooseDropPlace(column);
         }
 
         cout << endl << endl << endl;
-        board.display();
+        actualNode->getBoard().display();
 
-        gameOver = board.checkGameOver();
+        gameOver = actualNode->checkGameOver();
 
         moves++;
     }
@@ -60,18 +65,12 @@ int main() {
     moves--;
     if(gameOver == 2)
         cout << "Empate!" << endl;
-    else if(moves%2 == 0){
-        if(firstPlayer==1)
-            cout << "Ganhaste!" << endl;
-        else
-            cout << "O Computador ganhou." << endl;
-    }
-    else{
-        if(firstPlayer==1)
-            cout << "O Computador ganhou." << endl;
-        else
-            cout << "Ganhaste!" << endl;
-    }
+    else if((moves%2==0 && firstPlayer=='H') || (moves%2!=0 && firstPlayer!='H'))
+        cout << "Ganhaste!" << endl;
+    else
+        cout << "O Computador ganhou." << endl;
+
+    delete initialNode;
 
     return 0;
 }

@@ -148,5 +148,5 @@ void avaliateBoard(Board* current){
             substrd2[i][0] = str4[i].substr(0,4);
     }
 
-    current->calcAssignPoints(substrh, substrv, substrd1, substrd2);
+    //current->utility(substrh, substrv, substrd1, substrd2);
 }
