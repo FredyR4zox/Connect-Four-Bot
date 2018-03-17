@@ -18,7 +18,7 @@ public:
 	int checkGameOver();
 	char searchToken(int i, int j);
 	bool chooseDropPlace(int column, char piece);
-	int utility();
+	int utility(char myPiece, char playingPiece);
 };
 
 //Construtor default (void) do board
@@ -164,7 +164,7 @@ int Board::checkGameOver(){
 	return 2;
 }
 
-int Board::calculateFourArrayScore(int nOfMyPieces, int nOfOponentPieces){
+int calculateFourArrayScore(int nOfMyPieces, int nOfOponentPieces){
 	if(nOfMyPieces == 4)
 		return 512;
 	else if(nOfOponentPieces == 4)
@@ -203,18 +203,18 @@ int Board::utility(char myPiece, char playingPiece){
 	a draw has a value of 0.
 	*/
 
-	if(board.checkGameOver() == 1){
+	if(this->checkGameOver() == 1){
 		//Se a minha peça for igual à peça que supostamente vai jogar, quer dizer que eu perdi
 		if(myPiece == playingPiece)
 			return -512;
 		else
 			return 512;
 	}
-	else if(board.checkGameOver() == 2)
+	else if(this->checkGameOver() == 2)
 		return 0;
 	
 
-	int total = 0, scoreReturned;
+	int total = 0;
 	int nOfMyPieces, nOfOponentPieces;
 
 	//Calcular pontos horizontais

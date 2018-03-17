@@ -8,7 +8,7 @@ using namespace std;
 
 int main() {
     int column, moves = 0, gameOver = 0;
-    char firstPlayer;
+    char firstPlayer, pcPiece;
 
     //O primeiro jogador joga com o 'x'
     cout << "Primeiro jogador a jogar:" << endl;
@@ -23,16 +23,23 @@ int main() {
         return 1;
     }
 
+    if(firstPlayer=='C')
+        pcPiece = 'X';
+    else
+        pcPiece = 'O';
+
     //initialNode para depois podermos fazer delete à arvore toda
     Node* initialNode = new Node(firstPlayer);
     Node* actualNode = initialNode;
 
     actualNode->getBoard().display();
-    minimaxDecision(*actualNode, 8);
+
+    //fazer minimax inicial para ele calcular os nos todos
+    minimaxDecision(*actualNode, 5, 'X');
     
     while (!gameOver){
         if((moves%2==0 && firstPlayer=='C') || (moves%2!=0 && firstPlayer!='C')){
-            column = minimaxDecision(*actualNode, 8);
+            column = minimaxDecision(*actualNode, 5, pcPiece);
             cout << "PC jogou na coluna: " << column << endl;
             actualNode = actualNode->chooseDropPlace(column);
         }

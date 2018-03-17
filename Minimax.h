@@ -4,12 +4,12 @@
 
 using namespace std;
 
-int minimaxDecision(Node& node, int maxDistanceDepth);
-int maxValue(Node& node, int maxDistanceDepth);
-int minValue(Node& node, int maxDistanceDepth);
+int minimaxDecision(Node& node, int maxDistanceDepth, char myPiece);
+int maxValue(Node& node, int maxDistanceDepth, char myPiece);
+int minValue(Node& node, int maxDistanceDepth, char myPiece);
 
-int minimaxDecision(Node& node, int maxDistanceDepth){
-	int v = maxValue(node, maxDistanceDepth);
+int minimaxDecision(Node& node, int maxDistanceDepth, char myPiece){
+	int v = maxValue(node, maxDistanceDepth, myPiece);
 	array<Node*, 7> children = node.getChildren();
 	for(int i=0; i<7 && children[i]!=NULL; i++)
 		if(v == children[i]->getScore())
@@ -18,9 +18,9 @@ int minimaxDecision(Node& node, int maxDistanceDepth){
 	return children[0]->getMove();
 }
 
-int maxValue(Node& node, int maxDistanceDepth){
+int maxValue(Node& node, int maxDistanceDepth, char myPiece){
 	if(node.checkGameOver() || maxDistanceDepth<=0)
-		return node.utility();
+		return node.utility(myPiece);
 
 	int v = numeric_limits<int>::min();
 
@@ -32,14 +32,16 @@ int maxValue(Node& node, int maxDistanceDepth){
 
 	maxDistanceDepth--;
 	for(int i=0; i<7 && descendants[i]!=NULL; i++)
-		v = max(v, minValue(*descendants[i], maxDistanceDepth));
+		v = max(v, minValue(*descendants[i], maxDistanceDepth, myPiece));
+
+	node.setScore(v);
 
 	return v;
 }
 
-int minValue(Node& node, int maxDistanceDepth){
+int minValue(Node& node, int maxDistanceDepth, char myPiece){
 	if(node.checkGameOver() || maxDistanceDepth<=0)
-		return 1;
+		return node.utility(myPiece);
 
 	int v = numeric_limits<int>::max();
 
@@ -51,7 +53,9 @@ int minValue(Node& node, int maxDistanceDepth){
 
 	maxDistanceDepth--;
 	for(int i=0; i<7 && descendants[i]!=NULL; i++)
-		v = min(v, maxValue(*descendants[i], maxDistanceDepth));
+		v = min(v, maxValue(*descendants[i], maxDistanceDepth, myPiece));
+
+	node.setScore(v);
 
 	return v;
 }

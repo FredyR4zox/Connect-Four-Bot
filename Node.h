@@ -4,10 +4,12 @@ class Node{
 private:
     Board board;
     Node* parent;
+    char pcPiece;
     char player; //'C' = Computer, 'H' = Human
     char piece;
     int move; //Em que coluna o jogador meteu a peça
     int depth;
+    int score;
     array<Node*, 7> children;
 
 public:
@@ -20,12 +22,16 @@ public:
     inline char getPiece();
     inline int getMove();
     inline int getDepth();
+    inline int getScore();
+    inline int getPcPiece();
     inline array<Node*, 7> getChildren();
+
+    inline void setScore(int score_);
 
     int checkGameOver();
     array<Node*, 7> makeDescendants();
     Node* chooseDropPlace(int column);
-    int utility();
+    int utility(char myPiece);
 };
 
 Node::Node(char firstPlayer){
@@ -35,8 +41,15 @@ Node::Node(char firstPlayer){
 
     //piece é 'O' porque o 1º jogador começa com X e isto está assim por causa do outro construtor
     piece = 'X';
+
+    if(firstPlayer == 'C')
+        pcPiece = 'X';
+    else
+        pcPiece = 'O';
+
     move = -1;
     depth = 0;
+    score = 0;
     children = {};
 }
 
@@ -59,8 +72,10 @@ Node::Node(Node& node, int column){
     else
         player = 'C';
     
+    pcPiece = node.getPcPiece();
     move = column;
     depth = node.getDepth() + 1;
+    score = 0;
     children = {};
 }
 
@@ -90,8 +105,20 @@ inline int Node::getDepth(){
     return depth;
 }
 
+inline int Node::getScore(){
+    return score;
+}
+
+inline int Node::getPcPiece(){
+    return pcPiece;
+}
+
 inline array<Node*, 7> Node::getChildren(){
     return children;
+}
+
+inline void Node::setScore(int score_){
+    score = score_;
 }
 
 int Node::checkGameOver(){
