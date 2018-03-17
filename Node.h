@@ -132,10 +132,6 @@ array<Node*, 7> Node::makeDescendants(){
 
     for(unsigned int i=0; i<7 && moves[i]!=-1; i++){
         Node *node = new Node(*this, moves[i]);
-        /*if(hashSet->insert(node->getConfig()).second == false){
-            delete node;
-            continue;
-        }*/
 
         for(unsigned int i=0; i<7; i++){
             if(this->children[i]==NULL){

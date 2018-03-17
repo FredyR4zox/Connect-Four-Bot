@@ -37,6 +37,9 @@ array< array<char, 7>, 6> Board::getBoard() {
 
 array<int, 7> Board::possibleMoves(){
 	array<int, 7> possibles = {-1};
+	for(int i=0; i<7; i++)
+		possibles[i] = -1;
+	
 	int index = 0;
 
 	for(int i=0; i<7; i++){
