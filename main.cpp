@@ -1,29 +1,33 @@
 #include <iostream>
 #include <stdlib.h>
 #include "Board.h"
-#include "Algorithm.h"
 #include "Minimax.h"
 #include "Alphabeta.h"
 
 using namespace std;
-/*Vais metendo os tokens com o numero da coluna e enter e para sair fazes 7+Enter*/
 
 int main() {
     int column, moves=0, gameOver=0, maxDistanceDepth;
     char firstPlayer, pcPiece, algorithm;
+    int calateGCC;
 
+calateGCC = system("clear");       
+cout<<" _  _                                     __   _         _            "<<endl;
+cout<<"| || |           ___  _ __ ___           / /  (_) _ __  | |__    __ _ "<<endl;
+cout<<"| || |_  _____  / _ \\| '_ ` _ \\  _____  / /   | || '_ \\ | '_ \\  / _` |"<<endl;
+cout<<"|__   _||_____||  __/| | | | | ||_____|/ /___ | || | | || | | || (_| |"<<endl;
+cout<<"   |_|          \\___||_| |_| |_|       \\____/ |_||_| |_||_| |_| \\__,_|"<<endl<<endl;
+                                                                    
     cout << "Algoritmo a usar:" << endl;
     cout << "\tM - Minimax" << endl;
     cout << "\tA - Alpha-Beta" << endl << endl;
     cout << "Opção: ";
 
     cin >> algorithm;
-    if(algorithm!='M' && algorithm!='A'){
+    if(algorithm!='M' && algorithm!='A' && algorithm!='a' && algorithm!='m'){
         cout << "Erro! Algoritmo não encontrado" << endl;
         return 1;
     }
-
-
 
     cout << "Profundidade máxima a usar na pesquisa: ";
 
@@ -43,12 +47,12 @@ int main() {
 
     cin >> firstPlayer;
 
-    if(firstPlayer!='H' && firstPlayer!='C'){
+    if(firstPlayer!='H' && firstPlayer!='C' && firstPlayer!='c' && firstPlayer!='h'){
         cout << "Erro! Opção não encontrada" << endl;
         return 1;
     }
 
-    if(firstPlayer=='C')
+    if(firstPlayer=='C' || firstPlayer == 'c')
         pcPiece = 'X';
     else
         pcPiece = 'O';
@@ -64,20 +68,20 @@ int main() {
 
     
     //fazer minimax inicial para ele calcular os nos todos
-    if(algorithm == 'M')
+    if(algorithm == 'M' || algorithm == 'm')
         minimaxDecision(actualNode, maxDistanceDepth, pcPiece);
     else
         alphabetaDecision(actualNode, maxDistanceDepth, pcPiece);
 
 
     
-    while (!gameOver){
-        if((moves%2==0 && firstPlayer=='C') || (moves%2!=0 && firstPlayer!='C')){
-            if(algorithm == 'M')
+    while (!gameOver){        
+        if((moves%2==0 && (firstPlayer=='C' || firstPlayer=='c')) || (moves%2!=0 && (firstPlayer!='C' && firstPlayer!='c') )){
+            if(algorithm == 'M' || algorithm == 'm')
                 column = minimaxDecision(actualNode, maxDistanceDepth, pcPiece);
             else
                 column = alphabetaDecision(actualNode, maxDistanceDepth, pcPiece);
-
+            calateGCC = system("clear");
             cout << "PC jogou na coluna: " << column << endl;
             actualNode = actualNode->chooseDropPlace(column);
         }
@@ -95,9 +99,11 @@ int main() {
                 continue;
             }
             actualNode = actualNode->chooseDropPlace(column);
+            calateGCC = system("clear");
         }
 
-        cout << endl << endl << endl;
+        cout << endl;
+
         actualNode->getBoard().display();
 
         gameOver = actualNode->checkGameOver();

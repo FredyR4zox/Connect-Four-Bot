@@ -26,8 +26,6 @@ Board::Board() {
 	for (int i = 0 ; i < 6 ; i++)
 		for (int j = 0 ; j < 7 ; j++)
 			tab[i][j] = '-';
-	
-	//value = 0;
 }
 
 //Getter do board
@@ -52,7 +50,7 @@ array<int, 7> Board::possibleMoves(){
 	return possibles;
 }
 
-//Imprime o tabuleiro (já formatado/pronto!)
+
 void Board::display() {
 	cout << "+---------------+" << endl;
 	for (int i = 0 ; i < 6 ; i++) {

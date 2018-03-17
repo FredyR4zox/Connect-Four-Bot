@@ -17,8 +17,6 @@ int minimaxDecision(Node* node, int maxDistanceDepth, char myPiece){
 			return children[i]->getMove();
 	}
 
-	//tirar no trabalho final
-	cout << "DEU MERDA! DEU MERDA! DEU MERDA! DEU MERDA! DEU MERDA! DEU MERDA! DEU MERDA! DEU MERDA! DEU MERDA!" << endl;
 	return children[0]->getMove();
 }
 
