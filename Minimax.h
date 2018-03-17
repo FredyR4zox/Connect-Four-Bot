@@ -20,7 +20,7 @@ int minimaxDecision(Node& node, int maxDistanceDepth){
 
 int maxValue(Node& node, int maxDistanceDepth){
 	if(node.checkGameOver() || maxDistanceDepth<=0)
-		return 1;
+		return node.utility();
 
 	int v = numeric_limits<int>::min();
 

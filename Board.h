@@ -164,194 +164,131 @@ int Board::checkGameOver(){
 	return 2;
 }
 
-//Também se pode por esta funçao como parte da board
-/*void Board::utility() {
+int Board::calculateFourArrayScore(int nOfMyPieces, int nOfOponentPieces){
+	if(nOfMyPieces == 4)
+		return 512;
+	else if(nOfOponentPieces == 4)
+		return -512;
+	else if(nOfMyPieces == 3 && nOfOponentPieces == 0)
+		return 50;
+	else if(nOfOponentPieces == 3 && nOfMyPieces == 0)
+		return -50;
+	else if(nOfMyPieces == 2 && nOfOponentPieces == 0)
+		return 10;
+	else if(nOfOponentPieces == 2 && nOfMyPieces == 0)
+		return -10;
+	else if(nOfMyPieces == 1 && nOfOponentPieces == 0)
+		return 1;
+	else if(nOfOponentPieces == 1 && nOfMyPieces == 0)
+		return -1;
+	else
+		return 0;
+}
+
+//Calcular a pontuação do tabuleiro, sendo que piece é a nossa peça
+int Board::utility(char myPiece, char playingPiece){
 	
-	Pontuação:
-	+512 para vitória para o 'x' 
-	-512 para vitória prar o 'o'
-	0 para o empate
-	-50 para 3 'o' e nenhum 'x'
-	-10 para 2 'o' e nenhum 'x'
-	-1 para 1 'o' e nenhum 'x'
-	0 para nenhum token ou 'x' e 'o' mistos
-	1 para um 'x' e nenhum 'o'
-	10 para dois 'x' e nenhum 'o'
-	50 para tres 'x' e nenhum 'o'
-	Alem disto soma-se um valor pré-definido dependendo do turno atual
-	(+16 for X, -16 for O)
+	/*
+	The rules for evaluating segments are as follows (if X is the computer move):
+	-50 for three Os, no Xs,
+	-10 for two Os, no Xs,
+	-1 for one O, no Xs,
+	0 for no tokens, or mixed Xs and Os,
+	1 for one X, no Os,
+	10 for two Xs, no Os,
+	50 for three Xs, no Os.
+
+	a win by X has a value of +512,
+	a win by O has a value of -512,
+	a draw has a value of 0.
+	*/
+
+	if(board.checkGameOver() == 1){
+		//Se a minha peça for igual à peça que supostamente vai jogar, quer dizer que eu perdi
+		if(myPiece == playingPiece)
+			return -512;
+		else
+			return 512;
+	}
+	else if(board.checkGameOver() == 2)
+		return 0;
 	
 
-	int total = 0;
+	int total = 0, scoreReturned;
+	int nOfMyPieces, nOfOponentPieces;
 
 	//Calcular pontos horizontais
-	for (int i = 0 ; i < 6 ; i++) {
-		for (int j = 0 ; j < 4 ; j++) {
-			if (h[i][j] == "xxxx") {
-				total = 512;
-				return;
+	for(int i=0; i<6; i++){
+		for(int j=0; j<4; j++){
+
+			nOfMyPieces = nOfOponentPieces = 0;
+
+			for(int k=0; k<4; k++){
+				if(tab[i][j+k] == myPiece)
+					nOfMyPieces++;
+				else if(tab[i][j+k] != '-')
+					nOfOponentPieces++;
 			}
-			else if (h[i][j] == "oooo") {
-				total -= 512;
-				continue;
-			}
-			else if (h[i][j] == "ooo-" || h[i][j] == "-ooo") {
-				total -= 50;
-				continue;
-			}
-			else if (h[i][j] == "oo--" || h[i][j] == "-oo-" || h[i][j] == "--oo") {
-				total -= 10;
-				continue;
-			}
-			else if (h[i][j] == "o---" || h[i][j] == "-o--" || h[i][j] == "--o-" || h[i][j] == "---o") {
-				total -= 1;
-				continue;
-			}
-			else if (h[i][j] == "----" || h[i][j] == "xoxo" || h[i][j] == "oxox") {
-				continue;
-			}
-			else if (h[i][j] == "x---" || h[i][j] == "-x--" || h[i][j] == "--x-" || h[i][j] == "---x") {
-				total += 1;
-				continue;
-			}
-			else if (h[i][j] == "xx--" || h[i][j] == "-xx-" || h[i][j] == "--xx") {
-				total += 10;
-				continue;
-			}
-			else if (h[i][j] == "xxx-" || h[i][j] == "-xxx") {
-				total += 50;
-				continue;
-			}
+
+			total += calculateFourArrayScore(nOfMyPieces, nOfOponentPieces);
 		}
-	}		
+	}
 
 	//Calcular pontos verticais
-	for (int i = 0 ; i < 7 ; i++) {
-		for (int j = 0 ; j < 4 ; j++) {
-			if (v[i][j] == "xxxx") {
-				total += 512;
-				continue;
+	for(int i=0; i<3; i++){
+		for(int j=0; j<7; j++){
+
+			nOfMyPieces = nOfOponentPieces = 0;
+
+			for(int k=0; k<4; k++){
+				if(tab[i+k][j] == myPiece)
+					nOfMyPieces++;
+				else if(tab[i+k][j] != '-')
+					nOfOponentPieces++;
 			}
-			else if (v[i][j] == "oooo") {
-				total -= 512;
-				continue;
-			}
-			else if (v[i][j] == "ooo-" || v[i][j] == "-ooo") {
-				total -= 50;
-				continue;
-			}
-			else if (v[i][j] == "oo--" || v[i][j] == "-oo-" || v[i][j] == "--oo") {
-				total -= 10;
-				continue;
-			}
-			else if (v[i][j] == "o---" || v[i][j] == "-o--" || v[i][j] == "--o-" || v[i][j] == "---o") {
-				total -= 1;
-				continue;
-			}
-			else if (v[i][j] == "----" || v[i][j] == "xoxo" || v[i][j] == "oxox") {
-				continue;
-			}
-			else if (v[i][j] == "x---" || v[i][j] == "-x--" || v[i][j] == "--x-" || v[i][j] == "---x") {
-				total += 1;
-				continue;
-			}
-			else if (v[i][j] == "xx--" || v[i][j] == "-xx-" || v[i][j] == "--xx") {
-				total += 10;
-				continue;
-			}
-			else if (v[i][j] == "xxx-" || v[i][j] == "-xxx") {
-				total += 50;
-				continue;
-			}
+
+			total += calculateFourArrayScore(nOfMyPieces, nOfOponentPieces);
 		}
 	}
 
-	//Calcular pontos diagonal1 (/)
-	for (int i = 0 ; i < 7 ; i++) {
-		for (int j = 0 ; j < 4 ; j++) {
-			if (d1[i][j] == "xxxx") {
-				total += 512;
-				continue;
-			}
-			else if (d1[i][j] == "oooo") {
-				total -= 512;
-				continue;
-			}
-			else if (d1[i][j] == "ooo-" || d1[i][j] == "-ooo") {
-				total -= 50;
-				continue;
-			}
-			else if (d1[i][j] == "oo--" || d1[i][j] == "-oo-" || d1[i][j] == "--oo") {
-				total -= 10;
-				continue;
-			}
-			else if (d1[i][j] == "o---" || d1[i][j] == "-o--" || d1[i][j] == "--o-" || d1[i][j] == "---o") {
-				total -= 1;
-				continue;
-			}
-			else if (d1[i][j] == "----" || d1[i][j] == "xoxo" || d1[i][j] == "oxox") {
-				continue;
-			}
-			else if (d1[i][j] == "x---" || d1[i][j] == "-x--" || d1[i][j] == "--x-" || d1[i][j] == "---x") {
-				total += 1;
-				continue;
-			}
-			else if (d1[i][j] == "xx--" || d1[i][j] == "-xx-" || d1[i][j] == "--xx") {
-				total += 10;
-				continue;
-			}
-			else if (d1[i][j] == "xxx-" || d1[i][j] == "-xxx") {
-				total += 50;
-				continue;
-			}
-		}	
-	}
+	//Calcular pontos diagonal direita/baixo
+	for(int i=0; i<3; i++){
+		for(int j=0; j<4; j++){
 
-	//Calcular pontos diagonal2 (\)
-	for (int i = 0 ; i < 7 ; i++) {
-		for (int j = 0 ; j < 4 ; j++) {
-			if (d2[i][j] == "xxxx") {
-				total += 512;
-				continue;
+			nOfMyPieces = nOfOponentPieces = 0;
+
+			for(int k=0; k<4; k++){
+				if(tab[i+k][j+k] == myPiece)
+					nOfMyPieces++;
+				else if(tab[i+k][j+k] != '-')
+					nOfOponentPieces++;
 			}
-			else if (d2[i][j] == "oooo") {
-				total -= 512;
-				continue;
-			}
-			else if (d2[i][j] == "ooo-" || d2[i][j] == "-ooo") {
-				total -= 50;
-				continue;
-			}
-			else if (d2[i][j] == "oo--" || d2[i][j] == "-oo-" || d2[i][j] == "--oo") {
-				total -= 10;
-				continue;
-			}
-			else if (d2[i][j] == "o---" || d2[i][j] == "-o--" || d2[i][j] == "--o-" || d2[i][j] == "---o") {
-				total -= 1;
-				continue;
-			}
-			else if (d2[i][j] == "----" || d2[i][j] == "xoxo" || d2[i][j] == "oxox") {
-				continue;
-			}
-			else if (d2[i][j] == "x---" || d2[i][j] == "-x--" || d2[i][j] == "--x-" || d2[i][j] == "---x") {
-				total += 1;
-				continue;
-			}
-			else if (d2[i][j] == "xx--" || d2[i][j] == "-xx-" || d2[i][j] == "--xx") {
-				total += 10;
-				continue;
-			}
-			else if (d2[i][j] == "xxx-" || d2[i][j] == "-xxx") {
-				total += 50;
-				continue;
-			}
+
+			total += calculateFourArrayScore(nOfMyPieces, nOfOponentPieces);
 		}
-
-		if (lastMove == 'x')
-			total -= 16;
-		else
-			total += 16;
-
-		value = total;
 	}
-}*/
+
+	//Calcular pontos diagonal esquerda/baixo
+	for(int i=0; i<3; i++){
+		for(int j=6; j>2; j--){
+
+			nOfMyPieces = nOfOponentPieces = 0;
+
+			for(int k=0; k<4; k++){
+				if(tab[i+k][j-k] == myPiece)
+					nOfMyPieces++;
+				else if(tab[i+k][j-k] != '-')
+					nOfOponentPieces++;
+			}
+
+			total += calculateFourArrayScore(nOfMyPieces, nOfOponentPieces);
+		}
+	}
+
+	if(myPiece == playingPiece)
+		total += 16;
+	else
+		total -= 16;
+
+	return total;
+}
