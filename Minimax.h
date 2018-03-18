@@ -4,64 +4,67 @@
 
 using namespace std;
 
-int minimaxDecision(Node* node, int maxDistanceDepth, char myPiece);
-int maxValue(Node* node, int maxDistanceDepth, char myPiece);
-int minValue(Node* node, int maxDistanceDepth, char myPiece);
+int minimaxDecision(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes);
+int maxValue(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes);
+int minValue(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes);
 
-int minimaxDecision(Node* node, int maxDistanceDepth, char myPiece){
-	int v = maxValue(node, maxDistanceDepth, myPiece);
+int minimaxDecision(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes){
+    int v = maxValue(node, maxDistanceDepth, myPiece, generatedNodes, visitedNodes);
 
-	array<Node*, 7> children = node->getChildren();
-	for(int i=0; i<7 && children[i]!=NULL; i++){
-		if(v == children[i]->getScore())
-			return children[i]->getMove();
-	}
+    array<Node*, 7> children = node->getChildren();
+    for(int i=0; i<7 && children[i]!=NULL; i++)
+        if(v == children[i]->getScore())
+            return children[i]->getMove();
 
-	return children[0]->getMove();
+    return children[0]->getMove();
 }
 
-int maxValue(Node* node, int maxDistanceDepth, char myPiece){
-	if(node->checkGameOver() || maxDistanceDepth<=0){
-		int util = node->utility(myPiece);
-		node->setScore(util);
-		return util;
-	}
+int maxValue(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes){
+    visitedNodes++;
 
-	int v = numeric_limits<int>::min();
+    if(node->checkGameOver() || maxDistanceDepth<=0){
+        int util = node->utility(myPiece);
+        node->setScore(util);
+        return util;
+    }
 
-	array<Node*, 7> descendants;
-	if(node->getChildren()[0] != NULL)
-		descendants = node->getChildren();
-	else
-		descendants = node->makeDescendants();
+    int v = numeric_limits<int>::min();
 
-	for(int i=0; i<7 && descendants[i]!=NULL; i++)
-		v = max(v, minValue(descendants[i], maxDistanceDepth-1, myPiece));
+    array<Node*, 7> descendants;
+    if(node->getChildren()[0] != NULL)
+        descendants = node->getChildren();
+    else
+        descendants = node->makeDescendants(generatedNodes);
 
-	node->setScore(v);
+    for(int i=0; i<7 && descendants[i]!=NULL; i++)
+        v = max(v, minValue(descendants[i], maxDistanceDepth-1, myPiece, generatedNodes, visitedNodes));
 
-	return v;
+    node->setScore(v);
+
+    return v;
 }
 
-int minValue(Node* node, int maxDistanceDepth, char myPiece){
-	if(node->checkGameOver() || maxDistanceDepth<=0){
-		int util = node->utility(myPiece);
-		node->setScore(util);
-		return util;
-	}
+int minValue(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes){
+    visitedNodes++;
 
-	int v = numeric_limits<int>::max();
+    if(node->checkGameOver() || maxDistanceDepth<=0){
+        int util = node->utility(myPiece);
+        node->setScore(util);
+        return util;
+    }
 
-	array<Node*, 7> descendants;
-	if(node->getChildren()[0] != NULL)
-		descendants = node->getChildren();
-	else
-		descendants = node->makeDescendants();
+    int v = numeric_limits<int>::max();
 
-	for(int i=0; i<7 && descendants[i]!=NULL; i++)
-		v = min(v, maxValue(descendants[i], maxDistanceDepth-1, myPiece));
+    array<Node*, 7> descendants;
+    if(node->getChildren()[0] != NULL)
+        descendants = node->getChildren();
+    else
+        descendants = node->makeDescendants(generatedNodes);
 
-	node->setScore(v);
+    for(int i=0; i<7 && descendants[i]!=NULL; i++)
+        v = min(v, maxValue(descendants[i], maxDistanceDepth-1, myPiece, generatedNodes, visitedNodes));
 
-	return v;
+    node->setScore(v);
+
+    return v;
 }

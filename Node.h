@@ -29,9 +29,12 @@ public:
     inline void setScore(int score_);
 
     int checkGameOver();
-    array<Node*, 7> makeDescendants();
+    array<Node*, 7> makeDescendants(int& generatedNodes);
     Node* chooseDropPlace(int column);
     int utility(char myPiece);
+
+    void destroyBrothers();
+    void deleteChild(Node* child);
 };
 
 Node::Node(char firstPlayer){
@@ -80,9 +83,12 @@ Node::Node(Node& node, int column){
 }
 
 Node::~Node(){
-    for(unsigned int i=0; i<7; i++)
-        if(children[i]!=NULL)
+    for(unsigned int i=0; i<7; i++){
+        if(children[i]!=NULL){
             delete children[i];
+            children[i] = NULL;
+        }
+    }
 }
 
 inline Board Node::getBoard(){
@@ -117,6 +123,15 @@ inline array<Node*, 7> Node::getChildren(){
     return children;
 }
 
+inline void Node::deleteChild(Node* child){
+    for(int i=0; i<7; i++){
+        if(children[i] == child){
+            children[i] = NULL;
+            break;
+        }
+    }
+}
+
 inline void Node::setScore(int score_){
     score = score_;
 }
@@ -125,7 +140,7 @@ int Node::checkGameOver(){
     return board.checkGameOver();
 }
 
-array<Node*, 7> Node::makeDescendants(){
+array<Node*, 7> Node::makeDescendants(int& generatedNodes){
     array<int, 7> moves = board.possibleMoves();
     array<Node*, 7> l = {};
     unsigned int index = 0;
@@ -140,6 +155,7 @@ array<Node*, 7> Node::makeDescendants(){
             }
         }
 
+        generatedNodes++;
         l[index] = node;
         index++;
     }
@@ -157,4 +173,14 @@ Node* Node::chooseDropPlace(int column){
 
 int Node::utility(char myPiece){
     return board.utility(myPiece, piece);
+}
+
+void Node::destroyBrothers(){
+    array<Node*, 7> arr = parent->getChildren();
+    for(int i=0; i<7 && arr[i]!=NULL; i++){
+        if(arr[i] != this){
+            delete arr[i];
+            parent->deleteChild(arr[i]);
+        }
+    }
 }
