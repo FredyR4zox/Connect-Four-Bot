@@ -1,3 +1,7 @@
+#ifndef IA2_MINIMAX_H
+#define IA2_MINIMAX_H
+
+#include <array>
 #include <limits>
 
 #include "Node.h"
@@ -10,36 +14,61 @@ int minValue(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes
 
 int minimaxDecision(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes){
     int v = maxValue(node, maxDistanceDepth, myPiece, generatedNodes, visitedNodes);
+    int bestMove;
 
-    array<Node*, 7> children = node->getChildren();
-    for(int i=0; i<7 && children[i]!=NULL; i++)
-        if(v == children[i]->getScore())
-            return children[i]->getMove();
+    array<Node*, 7> descendants = node->getChildren();
+    for(int i=0; i<7 && descendants[i]!=NULL; i++){
+        if(v == descendants[i]->getScore()){
+            bestMove = descendants[i]->getMove();
+            
+            //Delete the descendants so that we dont have memory leaks
+            for(int j=0; j<7 && descendants[j]!=NULL; j++)
+                delete descendants[j];
 
-    return children[0]->getMove();
+            return bestMove;
+        }
+    }
+
+    //In case a bug occurs (we dont find the v in any of the children's score)
+    bestMove = descendants[0]->getMove();
+
+    for(int i=0; i<7 && descendants[i]!=NULL; i++)
+        delete descendants[i];
+
+
+    return bestMove;
 }
 
 int maxValue(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes){
     visitedNodes++;
 
-    if(node->checkGameOver() || maxDistanceDepth<=0){
+    //If the game is over OR we reached maximum depth
+    if(node->checkGameOver() || node->getDepth()>=maxDistanceDepth){
         int util = node->utility(myPiece);
-        node->setScore(util);
+
+        //If the node's depth is less or equal to one, we want want to delete it
+        //because we don't want to delete the root node and we want it's children
+        //not to get deleted because we will need to search thru them in the minimaxDecision
+        //else we will not need that node anymore, so we delete it
+        if(node->getDepth() <= 1)
+            node->setScore(util);
+        else
+            delete node;
+
         return util;
     }
 
     int v = numeric_limits<int>::min();
 
-    array<Node*, 7> descendants;
-    if(node->getChildren()[0] != NULL)
-        descendants = node->getChildren();
-    else
-        descendants = node->makeDescendants(generatedNodes);
+    array<Node*, 7> descendants = node->makeDescendants(generatedNodes);
 
     for(int i=0; i<7 && descendants[i]!=NULL; i++)
-        v = max(v, minValue(descendants[i], maxDistanceDepth-1, myPiece, generatedNodes, visitedNodes));
+        v = max(v, minValue(descendants[i], maxDistanceDepth, myPiece, generatedNodes, visitedNodes));
 
-    node->setScore(v);
+    if(node->getDepth() <= 1)
+        node->setScore(v);
+    else
+        delete node;
 
     return v;
 }
@@ -47,24 +76,30 @@ int maxValue(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes
 int minValue(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes){
     visitedNodes++;
 
-    if(node->checkGameOver() || maxDistanceDepth<=0){
+    if(node->checkGameOver() || node->getDepth()>=maxDistanceDepth){
         int util = node->utility(myPiece);
-        node->setScore(util);
+
+        if(node->getDepth() <= 1)
+            node->setScore(util);
+        else
+            delete node;
+
         return util;
     }
 
     int v = numeric_limits<int>::max();
 
-    array<Node*, 7> descendants;
-    if(node->getChildren()[0] != NULL)
-        descendants = node->getChildren();
-    else
-        descendants = node->makeDescendants(generatedNodes);
+    array<Node*, 7> descendants = node->makeDescendants(generatedNodes);
 
     for(int i=0; i<7 && descendants[i]!=NULL; i++)
-        v = min(v, maxValue(descendants[i], maxDistanceDepth-1, myPiece, generatedNodes, visitedNodes));
+        v = min(v, maxValue(descendants[i], maxDistanceDepth, myPiece, generatedNodes, visitedNodes));
 
-    node->setScore(v);
+    if(node->getDepth() <= 1)
+        node->setScore(v);
+    else
+        delete node;
 
     return v;
 }
+
+#endif

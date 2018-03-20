@@ -1,20 +1,27 @@
-#include <iostream>
+#ifndef IA2_NODE_H
+#define IA2_NODE_H
+
+#include <array>
+
+#include "Board.h"
+
+using namespace std;
 
 class Node{
 private:
     Board board;
     Node* parent;
-    char pcPiece;
-    char player; //'C' = Computer, 'H' = Human
-    char piece;
-    int move; //Em que coluna o jogador meteu a peça
+    char player;    //'C' = Computer, 'H' = Human | Whose turn is it
+    char piece;     //Whose piece turn is it to play
+    int move;       //In what column was the move that originated this node
     int depth;
-    int score;
+    int score;      //Score of the board, depending on what piece turn is it to play and whose turn is it
     array<Node*, 7> children;
 
 public:
     Node(char player_);
     Node(Node& node, int column);
+    Node(Node& node, int column, int depth_);
     ~Node();
 
     inline Board getBoard();
@@ -23,17 +30,14 @@ public:
     inline int getMove();
     inline int getDepth();
     inline int getScore();
-    inline int getPcPiece();
     inline array<Node*, 7> getChildren();
 
-    inline void setScore(int score_);
+    void setScore(int score_);
 
     int checkGameOver();
+    bool validMove(int column);
     array<Node*, 7> makeDescendants(int& generatedNodes);
-    Node* chooseDropPlace(int column);
     int utility(char myPiece);
-
-    void destroyBrothers();
     void deleteChild(Node* child);
 };
 
@@ -42,14 +46,8 @@ Node::Node(char firstPlayer){
     parent = NULL;
     player = firstPlayer;
 
-    //piece é 'O' porque o 1º jogador começa com X e isto está assim por causa do outro construtor
+    //Piece 'X' is the first piece to play
     piece = 'X';
-
-    if(firstPlayer == 'C')
-        pcPiece = 'X';
-    else
-        pcPiece = 'O';
-
     move = -1;
     depth = 0;
     score = 0;
@@ -60,11 +58,11 @@ Node::Node(Node& node, int column){
     board = node.getBoard();
 
     if(node.getPiece() == 'X'){
-        board.chooseDropPlace(column, 'X');
+        board.insertPiece(column, 'X');
         piece = 'O';
     }
     else{
-        board.chooseDropPlace(column, 'O');
+        board.insertPiece(column, 'O');
         piece = 'X';
     }
     
@@ -74,22 +72,50 @@ Node::Node(Node& node, int column){
         player = 'H';
     else
         player = 'C';
-    
-    pcPiece = node.getPcPiece();
+
     move = column;
     depth = node.getDepth() + 1;
     score = 0;
     children = {};
 }
 
+Node::Node(Node& node, int column, int depth_){
+    board = node.getBoard();
+
+    if(node.getPiece() == 'X'){
+        board.insertPiece(column, 'X');
+        piece = 'O';
+    }
+    else{
+        board.insertPiece(column, 'O');
+        piece = 'X';
+    }
+    
+    parent = &node;
+    
+    if(node.getPlayer() == 'C')
+        player = 'H';
+    else
+        player = 'C';
+
+    move = column;
+    depth = depth_;
+    score = 0;
+    children = {};
+}
+
 Node::~Node(){
+    if(parent!=NULL)
+        parent->deleteChild(this);
+
     for(unsigned int i=0; i<7; i++){
         if(children[i]!=NULL){
             delete children[i];
-            children[i] = NULL;
         }
     }
 }
+
+
 
 inline Board Node::getBoard(){
     return board;
@@ -115,29 +141,24 @@ inline int Node::getScore(){
     return score;
 }
 
-inline int Node::getPcPiece(){
-    return pcPiece;
-}
-
 inline array<Node*, 7> Node::getChildren(){
     return children;
 }
 
-inline void Node::deleteChild(Node* child){
-    for(int i=0; i<7; i++){
-        if(children[i] == child){
-            children[i] = NULL;
-            break;
-        }
-    }
-}
+
 
 inline void Node::setScore(int score_){
     score = score_;
 }
 
+
+
 int Node::checkGameOver(){
     return board.checkGameOver();
+}
+
+bool Node::validMove(int column){
+    return board.validMove(column);
 }
 
 array<Node*, 7> Node::makeDescendants(int& generatedNodes){
@@ -149,8 +170,8 @@ array<Node*, 7> Node::makeDescendants(int& generatedNodes){
         Node *node = new Node(*this, moves[i]);
 
         for(unsigned int i=0; i<7; i++){
-            if(this->children[i]==NULL){
-                this->children[i] = node;
+            if(children[i]==NULL){
+                children[i] = node;
                 break;
             }
         }
@@ -163,24 +184,17 @@ array<Node*, 7> Node::makeDescendants(int& generatedNodes){
     return l;
 }
 
-Node* Node::chooseDropPlace(int column){
-    for(int i=0; i<7 && children[i]!=NULL; i++)
-        if(children[i]->getMove() == column)
-            return children[i];
-    
-    return NULL;
-}
-
 int Node::utility(char myPiece){
     return board.utility(myPiece, piece);
 }
 
-void Node::destroyBrothers(){
-    array<Node*, 7> arr = parent->getChildren();
-    for(int i=0; i<7 && arr[i]!=NULL; i++){
-        if(arr[i] != this){
-            delete arr[i];
-            parent->deleteChild(arr[i]);
+void Node::deleteChild(Node* child){
+    for(unsigned int i=0; i<7; i++){
+        if(children[i]==child){
+            children[i] = NULL;
+            break;
         }
     }
 }
+
+#endif
