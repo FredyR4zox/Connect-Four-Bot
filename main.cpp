@@ -96,7 +96,7 @@ int main() {
             column = searchFunction(&actualNode, maxDistanceDepth, pcPiece, generatedNodes, visitedNodes);
             clock2 = clock();
 
-            cout << "   Nós gerados nesta procura: " << generatedNodes << endl;
+            cout << endl << "   Nós gerados nesta procura: " << generatedNodes << endl;
             cout << "   Nós visitados nesta procura: " << visitedNodes << endl;
             cout << "   Tempo de execução do algoritmo: " << ((float)clock2-clock1)/CLOCKS_PER_SEC << " segundos" << endl << endl;
 
@@ -109,7 +109,7 @@ int main() {
             column = searchFunction(&actualNode, maxDistanceDepth, humanPiece, generatedNodes, visitedNodes);
             clock2 = clock();
 
-            cout << "   Nós gerados nesta procura: " << generatedNodes << endl;
+            cout << endl << "   Nós gerados nesta procura: " << generatedNodes << endl;
             cout << "   Nós visitados nesta procura: " << visitedNodes << endl;
             cout << "   Tempo de execução do algoritmo: " << ((float)clock2-clock1)/CLOCKS_PER_SEC << " segundos" << endl << endl;
 
@@ -117,7 +117,7 @@ int main() {
             cout << "Introduza em que coluna quer jogar: ";
 
             //Comment this line so that the human is also a bot
-            //cin >> column;
+            cin >> column;
 
             if(column<0 || column>6){
                 cout << endl << "Erro! Coluna não existente" << endl;

@@ -10,15 +10,12 @@ using namespace std;
 
 //Protótipos
 int alphabetaDecision(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes);
-int ABmaxValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int beta, int& generatedNodes, int& visitedNodes, unsigned int& prunedNodes);
-int ABminValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int beta, int& generatedNodes, int& visitedNodes, unsigned int& prunedNodes);
+int ABmaxValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int beta, int& generatedNodes, int& visitedNodes);
+int ABminValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int beta, int& generatedNodes, int& visitedNodes);
 
 int alphabetaDecision(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes){
-    unsigned int prunedNodes = 0;
     int alpha = numeric_limits<int>::min(), beta = numeric_limits<int>::max();
-    int v = ABmaxValue(node, maxDistanceDepth, myPiece, alpha, beta, generatedNodes, visitedNodes, prunedNodes);
-
-    cout << endl << "   Número de nós cortados nesta procura: " << prunedNodes << endl;
+    int v = ABmaxValue(node, maxDistanceDepth, myPiece, alpha, beta, generatedNodes, visitedNodes);
     
     int bestMove;
 
@@ -45,7 +42,7 @@ int alphabetaDecision(Node* node, int maxDistanceDepth, char myPiece, int& gener
     return bestMove;
 }
 
-int ABmaxValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int beta, int& generatedNodes, int& visitedNodes, unsigned int& prunedNodes){
+int ABmaxValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int beta, int& generatedNodes, int& visitedNodes){
     visitedNodes++;
 
     if(node->checkGameOver() || node->getDepth()>=maxDistanceDepth){
@@ -64,10 +61,9 @@ int ABmaxValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int be
     array<Node*, 7> descendants = node->makeDescendants(generatedNodes);
 
     for (int i = 0 ; i<7 && descendants[i]!=NULL ; i++) {
-        v = max(v,ABminValue(descendants[i], maxDistanceDepth, myPiece, alpha, beta, generatedNodes, visitedNodes, prunedNodes));
+        v = max(v,ABminValue(descendants[i], maxDistanceDepth, myPiece, alpha, beta, generatedNodes, visitedNodes));
         
         if (v >= beta){
-            prunedNodes++;
 
             if(node->getDepth() <= 1)
                 node->setScore(v);
@@ -88,7 +84,7 @@ int ABmaxValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int be
     return v;
 }
 
-int ABminValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int beta, int& generatedNodes, int& visitedNodes, unsigned int& prunedNodes){
+int ABminValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int beta, int& generatedNodes, int& visitedNodes){
     visitedNodes++;
 
     if(node->checkGameOver() || node->getDepth()>=maxDistanceDepth){
@@ -107,10 +103,9 @@ int ABminValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int be
     array<Node*, 7> descendants = node->makeDescendants(generatedNodes);
 
     for (int i = 0 ; i<7 && descendants[i]!= NULL ; i++) {
-        v = min(v,ABmaxValue(descendants[i], maxDistanceDepth, myPiece, alpha, beta, generatedNodes, visitedNodes, prunedNodes));
+        v = min(v,ABmaxValue(descendants[i], maxDistanceDepth, myPiece, alpha, beta, generatedNodes, visitedNodes));
         
         if (v <= alpha){
-            prunedNodes++;
 
             if(node->getDepth() <= 1)
                 node->setScore(v);
