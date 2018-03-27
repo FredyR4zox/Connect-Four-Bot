@@ -18,21 +18,23 @@ int main() {
 
     //Clocks to count the time that the algorithm took
     clock_t clock1, clock2;
-
-    cout << " _  _                                     __   _         _            " << endl;
-    cout << "| || |           ___  _ __ ___           / /  (_) _ __  | |__    __ _ " << endl;
-    cout << "| || |_  _____  / _ \\| '_ ` _ \\  _____  / /   | || '_ \\ | '_ \\  / _` |" << endl;
-    cout << "|__   _||_____||  __/| | | | | ||_____|/ /___ | || | | || | | || (_| |" << endl;
-    cout << "   |_|          \\___||_| |_| |_|       \\____/ |_||_| |_||_| |_| \\__,_|" << endl << endl;
+    
+    
+    cout << "                                 _      __                 " << endl;
+    cout << "                                | |    / _|                " << endl;
+    cout << "  ___ ___  _ __  _ __   ___  ___| |_  | |_ ___  _   _ _ __ " << endl;
+    cout << " / __/ _ \| '_ \| '_ \ / _ \/ __| __| |  _/ _ \| | | | '__|" << endl;
+    cout << "| (_| (_) | | | | | | |  __/ (__| |_  | || (_) | |_| | |   " << endl;
+    cout << " \___\___/|_| |_|_| |_|\___|\___|\__| |_| \___/ \__,_|_|   " << endl << endl;
                                                                     
-    cout << "Algoritmo a usar:" << endl;
+    cout << "Algorithm to use:" << endl;
     cout << "\tM - Minimax" << endl;
-    cout << "\tA - Alpha-Beta" << endl << endl;
-    cout << "Opção: ";
+    cout << "\tA - Alpha-Beta Pruning" << endl << endl;
+    cout << "Option: ";
 
     cin >> algorithm;
     if(algorithm!='M' && algorithm!='A' && algorithm!='a' && algorithm!='m'){
-        cout << "Erro! Algoritmo não encontrado" << endl;
+        cout << "Error! Algorithm not found" << endl;
         return 1;
     }
     algorithm = toupper(algorithm);
@@ -45,26 +47,26 @@ int main() {
 
 
 
-    cout << endl << "Profundidade máxima a usar na pesquisa: ";
+    cout << endl << "Maximum depth: ";
 
     cin >> maxDistanceDepth;
     if(maxDistanceDepth <=0){
-        cout << "Erro! Profundidade máxima inválida" << endl;
+        cout << "Error! Invalid maximum depth" << endl;
         return 1;
     }
 
 
 
     //First player plays with 'X'
-    cout << endl << "Primeiro jogador a jogar:" << endl;
-    cout << "\tH - Humano" << endl;
-    cout << "\tC - Computador" << endl << endl;
+    cout << endl << "First player:" << endl;
+    cout << "\tH - Human" << endl;
+    cout << "\tC - Computer" << endl << endl;
     cout << "Opção: ";
 
     cin >> firstPlayer;
 
     if(firstPlayer!='H' && firstPlayer!='C' && firstPlayer!='c' && firstPlayer!='h'){
-        cout << "Erro! Opção não encontrada" << endl;
+        cout << "Error! Option not found" << endl;
         return 1;
     }
     firstPlayer = toupper(firstPlayer);
@@ -96,11 +98,11 @@ int main() {
             column = searchFunction(&actualNode, maxDistanceDepth, pcPiece, generatedNodes, visitedNodes);
             clock2 = clock();
 
-            cout << endl << "   Nós gerados nesta procura: " << generatedNodes << endl;
-            cout << "   Nós visitados nesta procura: " << visitedNodes << endl;
-            cout << "   Tempo de execução do algoritmo: " << ((float)clock2-clock1)/CLOCKS_PER_SEC << " segundos" << endl << endl;
+            cout << endl << "   Generated nodes on this search: " << generatedNodes << endl;
+            cout << "   Visited nodes on this search: " << visitedNodes << endl;
+            cout << "   Execution time of the algorithm: " << ((float)clock2-clock1)/CLOCKS_PER_SEC << " seconds" << endl << endl;
 
-            cout << "O Computador decidiu jogar na coluna: " << column << endl;
+            cout << "The computer decided to play on column: " << column << endl;
         }
         else{
 
@@ -109,23 +111,18 @@ int main() {
             column = searchFunction(&actualNode, maxDistanceDepth, humanPiece, generatedNodes, visitedNodes);
             clock2 = clock();
 
-            cout << endl << "   Nós gerados nesta procura: " << generatedNodes << endl;
-            cout << "   Nós visitados nesta procura: " << visitedNodes << endl;
-            cout << "   Tempo de execução do algoritmo: " << ((float)clock2-clock1)/CLOCKS_PER_SEC << " segundos" << endl << endl;
+            cout << endl << "   Generated nodes on this search: " << generatedNodes << endl;
+            cout << "   Visited nodes on this search: " << visitedNodes << endl;
+            cout << "   Execution time of the algorithm: " << ((float)clock2-clock1)/CLOCKS_PER_SEC << " seconds" << endl << endl;
 
-            cout << "Melhor coluna para jogar: " << column << endl;
-            cout << "Introduza em que coluna quer jogar: ";
+            cout << "Best column to play: " << column << endl;
+            cout << "Insert on which column you want to play: ";
 
             //Comment this line so that the human is also a bot
             cin >> column;
 
-            if(column<0 || column>6){
-                cout << endl << "Erro! Coluna não existente" << endl;
-                continue;
-            }
-
-            if(!actualNode.validMove(column)){
-                cout << endl << "Erro! Não é possivel fazer uma jogada nessa coluna" << endl;
+            if(column<0 || column>6 || !actualNode.validMove(column)){
+                cout << endl << "Error! Invalid column to play" << endl;
                 continue;
             }
 
@@ -150,11 +147,11 @@ int main() {
     //Decrement the move variable to see which player made the last move
     moves--;
     if(gameOver == 2)
-        cout << "Empate!" << endl;
+        cout << "Draw!" << endl;
     else if((moves%2==0 && firstPlayer=='H') || (moves%2!=0 && firstPlayer!='H'))
-        cout << "Ganhaste!" << endl;
+        cout << "You won!" << endl;
     else
-        cout << "O Computador ganhou." << endl;
+        cout << "The computer won." << endl;
 
     return 0;
 }
