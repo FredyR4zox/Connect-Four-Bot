@@ -31,6 +31,6 @@ To change this value go to the file "SearchMethods.h" and change the value of th
 
 
 ### Authors
-* Ana Rita Santos Lopes da Costa - up201605706
-* Frederico Emanuel Almeida Lopes - up201604674
-* João Lucas Faria de Pires - up201606617
+* Ana Rita Santos Lopes da Costa - up201605706 - [ritasantos11](https://www.github.com/ritasantos11)
+* Frederico Emanuel Almeida Lopes - up201604674 - [FredyR4zox](https://www.github.com/FredyR4zox)
+* João Lucas Faria de Pires - up201606617 - [iSynthx](https://www.github.com/iSynthx)
