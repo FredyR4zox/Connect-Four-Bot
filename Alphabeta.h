@@ -14,12 +14,28 @@ int ABmaxValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int be
 int ABminValue(Node* node, int maxDistanceDepth, char myPiece, int alpha, int beta, int& generatedNodes, int& visitedNodes);
 
 int alphabetaDecision(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes){
+    array<Node*, 7> descendants = node->makeDescendants(generatedNodes);
+    int bestMove;
+    
+    //Verify instant win
+    for(int i=0; i<7 && descendants[i]!=NULL; i++){
+        if(descendants[i]->utility(myPiece) == 512){
+            bestMove = descendants[i]->getMove();
+            
+            //Delete the descendants so that we dont have memory leaks
+            for(int j=i; j<7 && descendants[j]!=NULL; j++)
+                delete descendants[j];
+
+            return bestMove;
+        }
+        delete descendants[i];
+    }
+
+
     int alpha = numeric_limits<int>::min(), beta = numeric_limits<int>::max();
     int v = ABmaxValue(node, maxDistanceDepth, myPiece, alpha, beta, generatedNodes, visitedNodes);
-    
-    int bestMove;
 
-    array<Node*, 7> descendants = node->getChildren();
+    descendants = node->getChildren();
     for(int i=0; i<7 && descendants[i]!=NULL; i++){
         if(v == descendants[i]->getScore()){
             bestMove = descendants[i]->getMove();

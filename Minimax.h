@@ -13,10 +13,28 @@ int maxValue(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes
 int minValue(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes);
 
 int minimaxDecision(Node* node, int maxDistanceDepth, char myPiece, int& generatedNodes, int& visitedNodes){
-    int v = maxValue(node, maxDistanceDepth, myPiece, generatedNodes, visitedNodes);
+    array<Node*, 7> descendants = node->makeDescendants(generatedNodes);
     int bestMove;
+    
+    //Verify instant win
+    for(int i=0; i<7 && descendants[i]!=NULL; i++){
+        if(descendants[i]->utility(myPiece) == 512){
+            bestMove = descendants[i]->getMove();
+            
+            //Delete the descendants so that we dont have memory leaks
+            for(int j=i; j<7 && descendants[j]!=NULL; j++)
+                delete descendants[j];
 
-    array<Node*, 7> descendants = node->getChildren();
+            return bestMove;
+        }
+        delete descendants[i];
+    }
+
+
+
+    int v = maxValue(node, maxDistanceDepth, myPiece, generatedNodes, visitedNodes);
+
+    descendants = node->getChildren();
     for(int i=0; i<7 && descendants[i]!=NULL; i++){
         if(v == descendants[i]->getScore()){
             bestMove = descendants[i]->getMove();
