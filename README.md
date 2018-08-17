@@ -1,11 +1,11 @@
 # Connect-Four-Bot
-Second project of the subject Artificial Inteligence, which consisted in developing a bot to play the Connect Four Game using adversarial search.
+Second project for the subject Artificial Inteligence, which consisted in developing a bot to play the Connect Four Game using adversarial search.
 Our implementation was in C++.
 
 
 ### Search functions implemented
 * Minimax
-* Alpha-Beta prunning
+* Alpha-Beta Prunning
 
 
 ### Compilation
@@ -18,16 +18,15 @@ The usage of this project is intuitive. It's instructions appear when the progra
 
 
 ### Files
-* main.cpp - Requests input and calls the search functions
-* Node.h - Implementation of the graph node's
-* Config.h 	- Implementation of the game board and functions to work with the board
-* Minimax.h - Implementation of the Minimax algorithm
-* Alphabeta.h - Implementation of the Alpha-Beta Pruning algorithm
+* main.cpp - Requests input and calls the search functions.
+* Node.h - Implementation of the graph node's.
+* Board.h 	- Implementation of the game board and functions to work with the board.
+* Minimax.h - Implementation of the Minimax algorithm.
+* Alphabeta.h - Implementation of the Alpha-Beta Pruning algorithm.
 
 
-### Change the maximum depth
-The maximum depth that the search functions DFS, BFS, A* and Greedy have is 80 by default.
-To change this value go to the file "SearchMethods.h" and change the value of the constant MAX_DEPTH on the beginning of the file.
+### Bot vs Bot
+To have two bots play against each other, just uncomment line 122 in file main.cpp.
 
 
 ### Authors
