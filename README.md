@@ -1,4 +1,4 @@
-# Connect-Four-Bot
+# Connect-Four Bot
 Second project for the subject Artificial Inteligence, which consisted in developing a bot to play the Connect Four Game using adversarial search.
 Our implementation was in C++.
 
